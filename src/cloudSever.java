@@ -76,7 +76,7 @@ public class cloudSever {
                                     int temp_len = 0;
                                     while (temp_len<temp_size){temp_len += dataInput.read(temp_data,temp_len,temp_size-temp_len);}
                                     if(temp_size < 30){System.out.println("error,match 命令后不会跟小于20的");}
-                                    parse_image(temp_data,"before\\"+index+".jpg");
+                                    parse_image(temp_data,"temp\\before\\"+index+".jpg");
 
                                 }
                                 //调用脚本去匹配
