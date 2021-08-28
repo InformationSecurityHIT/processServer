@@ -15,7 +15,7 @@ public class cloudSever {
     public cloudSever() {
         try {
             //创建服务端套接字，之后等待客户端连接
-            serversocket = new ServerSocket(9999);
+            serversocket = new ServerSocket(4444);
             while (!serversocket.isClosed()) {
                 Socket acceptedSocket_tmp = serversocket.accept();
                 System.out.println("连接成功");
@@ -269,50 +269,6 @@ public class cloudSever {
 
             System.out.println("耗时：" + (end - start) / 1000 + " s");
         }
-    }
-    class listen extends KeyAdapter {
-        private String name = "用户1";
-        @Override
-        public void keyPressed(KeyEvent e) {
-            char charA = e.getKeyChar();
-//            System.out.println("你按了《"+charA+"》键");
-            //生成36到37的随机数
-            //Math.random()    [0,1]
-            double tempre = 36 + Math.random();
-            //显示并且在出入记录增加一条
-            switch (charA) {
-                case '1':
-                    name ="用户1";
-                    break;
-                case '2':
-                    name="用户2";
-                    break;
-                case '3':
-                    name = "用户3";
-                    break;
-                case '4':
-                    name = "用户4";
-                    break;
-                case '5':
-                    name = "用户5";
-                    break;
-                case '6':
-                    name = "用户6";
-                    break;
-                case '7':
-                    name = "用户7";
-                    break;
-                case '8':
-                    name = "用户8";
-                    break;
-                case '9':
-                    name = "用户9";
-                    break;
-                default:
-                    break;
-            }
-        }
-        public String getName(){return this.name;}
     }
     public static void main(String[] args) {
         new cloudSever();
