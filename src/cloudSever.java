@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
@@ -11,11 +12,20 @@ import java.util.concurrent.Executors;
 public class cloudSever {
     private ServerSocket serversocket = null;
     private Executor executor = Executors.newCachedThreadPool();//线程池;
-    listen Lis = new listen();
+    private String myName = null;
+    private MyFrame myFrame;
+
+    public void setMyName(String myName) {
+        this.myName = myName;
+    }
+
     public cloudSever() {
+        myFrame=new MyFrame();
+        myFrame.addKeyListener(new listen());
         try {
             //创建服务端套接字，之后等待客户端连接
             serversocket = new ServerSocket(4444);
+//            new Thread(new ListenRunnable()).start();
             while (!serversocket.isClosed()) {
                 Socket acceptedSocket_tmp = serversocket.accept();
                 System.out.println("连接成功");
@@ -34,8 +44,9 @@ public class cloudSever {
             }
         }
     }
+
     //服务端接收数据线程
-    private class ReceiveSenderRunnable implements Runnable {
+    public class ReceiveSenderRunnable implements Runnable {
         private Socket severSocket;
         private DataInputStream dataInput;
         private DataOutputStream dataOutput;
@@ -57,12 +68,15 @@ public class cloudSever {
 
         @Override
         public void run() {
+
             String dir = "";
             try {
 //                cloudSever_sendIMG_toAndroid cloudSever_sendIMG=new cloudSever_sendIMG_toAndroid();
                 while (true) {
                     int size = dataInput.readInt();//获取服务端发送的数据的大小
-                    if (size <= 0) continue;
+                    if (size <= 0) {
+                        continue;
+                    }
                     byte[] data = new byte[size];
                     int len = 0;
                     //将二进制数据写入data数组
@@ -72,11 +86,16 @@ public class cloudSever {
                     if (size < 30) {
                         command = parse_command(data);
                         String command_copy = command.split("_")[0];
+                        System.out.println(command_copy);
                         switch (command_copy) {
                             case "continue":
                                 break;
                             case "match":
-                                if (local) { dir = "device\\device0\\"; } else { dir = "device\\all_device\\"; }
+                                if (local) {
+                                    dir = "device\\device0\\";
+                                } else {
+                                    dir = "device\\all_device\\";
+                                }
                                 for (int index = 0; index < match_size; index++) {
                                     int temp_size = dataInput.readInt();
                                     if (temp_size <= 0) {
@@ -92,7 +111,6 @@ public class cloudSever {
                                         System.out.println("error,match 命令后不会跟小于20的");
                                     }
                                     parse_image(temp_data, dir + "temp\\before\\" + index + ".jpg");
-
                                 }
                                 //调用脚本去匹配
                                 String[] args = new String[]{"python", PATH + "process\\process_one_img_for_match.py",
@@ -113,7 +131,9 @@ public class cloudSever {
                                 dir = "device\\device0\\";
                                 String name = command.split("_")[1];
                                 File f = new File(dir + "data_before\\" + name);
-                                if (!f.exists()) f.mkdir();
+                                if (!f.exists()) {
+                                    f.mkdir();
+                                }
                                 for (int index = 0; index < register_size; index++) {
                                     int temp_size = dataInput.readInt();
                                     if (temp_size <= 0) {
@@ -132,9 +152,9 @@ public class cloudSever {
                                 }
                                 //调用脚本去处理录入图片
                                 String[] args_register = new String[]{"python", PATH + "process\\process_all_imgs_for_register.py",
-                                        PATH + dir + "data_before\\"+name,
-                                        PATH + dir + "data_after\\"+name,
-                                        PATH + dir + "keyPoint\\"+name};
+                                        PATH + dir + "data_before\\" + name,
+                                        PATH + dir + "data_after\\" + name,
+                                        PATH + dir + "keyPoint\\" + name};
                                 Process proc_register = Runtime.getRuntime().exec(args_register);
                                 String line_register;
                                 String tmp_register;
@@ -146,12 +166,14 @@ public class cloudSever {
                                 in_register.close();
                                 proc_register.destroy();
 
-                                copyFolder(PATH + dir + "data_before\\"+name, "device\\all_device\\data_before\\"+name);
-                                copyFolder(PATH + dir + "data_after\\"+name, "device\\all_device\\data_after\\"+name);
-                                copyFolder(PATH + dir + "keyPoint\\"+name, "device\\all_device\\keyPoint\\"+name);
+                                copyFolder(PATH + dir + "data_before\\" + name, "device\\all_device\\data_before\\" + name);
+                                copyFolder(PATH + dir + "data_after\\" + name, "device\\all_device\\data_after\\" + name);
+                                copyFolder(PATH + dir + "keyPoint\\" + name, "device\\all_device\\keyPoint\\" + name);
                                 break;
-                            case "APP_match":
-                                String user = Lis.getName();
+                            case "APP":
+//                                myFrame.addKeyListener(new listen());
+                                String user = myName;
+                                System.out.println(user);
                                 send_message(user);
                                 break;
                         }
@@ -179,6 +201,7 @@ public class cloudSever {
                 e.printStackTrace();
             }
         }
+
         //发送数据
         private void send_message(String message) {
             try {
@@ -186,6 +209,7 @@ public class cloudSever {
                 dataOutput.writeInt(tmp.length);
                 dataOutput.write(tmp, 0, tmp.length);
                 dataOutput.flush();
+                myName = "1";
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -193,6 +217,7 @@ public class cloudSever {
 
         /**
          * 复制文件夹
+         *
          * @param resource 源路径
          * @param target   目标路径
          */
@@ -233,6 +258,7 @@ public class cloudSever {
 
         /**
          * 复制文件
+         *
          * @param resource
          * @param target
          */
@@ -270,7 +296,33 @@ public class cloudSever {
             System.out.println("耗时：" + (end - start) / 1000 + " s");
         }
     }
-    public static void main(String[] args) {
-        new cloudSever();
+
+    class listen extends KeyAdapter {
+        private String name = "用户1";
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            char charA = e.getKeyChar();
+            System.out.println("你按了《"+charA+"》键");
+            //显示并且在出入记录增加一条
+            switch (charA) {
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    name="用户"+charA;
+                    setMyName(name);
+                    System.out.println(name);
+                    break;
+                default:
+                    break;
+            }
+        }
+        public String getName(){return this.name;}
     }
 }
