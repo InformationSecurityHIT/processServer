@@ -11,7 +11,7 @@ public class cloudSever {
     public cloudSever() {
         try {
             //创建服务端套接字，之后等待客户端连接
-            serversocket = new ServerSocket(8888);
+            serversocket = new ServerSocket(9999);
             while (!serversocket.isClosed()) {
                 Socket acceptedSocket_tmp = serversocket.accept();
                 System.out.println("连接成功");
@@ -41,7 +41,8 @@ public class cloudSever {
         private String command = "continue";        //发送的保持连接的短串
         private final int match_size = 3;
         private final int register_size = 6;
-        private final String PATH = "D:\\Lab\\processServer\\";
+        //TODO  存储位置
+        private final String PATH = "D:\\InformationSecurityCompetition\\gameUse\\processServer\\";
 
         public ReceiveSenderRunnable(Socket s) throws IOException {
             this.severSocket = s;
