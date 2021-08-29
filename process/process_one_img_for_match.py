@@ -97,8 +97,7 @@ if __name__ == "__main__":
 
     # imagePath = "D:\\work\\Java\\code\\wkr\\data_before\\new_match"
     # destRoot = "D:\\work\\Java\\code\\wkr\\data_before\\match_after"
-    data_dir = "D:\work\Java\code\wkr\\keyPoint"
-
+    data_dir = "D:\\InformationSecurityCompetition\\gameUse\\processServer\\device\\device0\\keyPoint"
     # if not os.path.exists(destRoot):
     #     os.mkdir(destRoot)
     images = os.listdir(imagePath)

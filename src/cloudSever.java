@@ -24,7 +24,7 @@ public class cloudSever {
         myFrame.addKeyListener(new listen());
         try {
             //创建服务端套接字，之后等待客户端连接
-            serversocket = new ServerSocket(4444);
+            serversocket = new ServerSocket(9999);
 //            new Thread(new ListenRunnable()).start();
             while (!serversocket.isClosed()) {
                 Socket acceptedSocket_tmp = serversocket.accept();
@@ -121,7 +121,7 @@ public class cloudSever {
                                 BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                                 while ((tmp = in.readLine()) != null) {
                                     line = tmp;
-                                    System.out.println(line);
+                                    //System.out.println(line);
                                 }
                                 in.close();
                                 proc.destroy();
