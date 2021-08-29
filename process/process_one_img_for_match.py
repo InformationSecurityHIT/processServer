@@ -113,7 +113,7 @@ if __name__ == "__main__":
     list_result = []
     for re in results:
         list_result.append(re.get())
-    print(list_result)
+    # print(list_result)
 
 
     # imagePath = "D:\\work\\Java\\code\\wkr\\data_before\\new_match"
